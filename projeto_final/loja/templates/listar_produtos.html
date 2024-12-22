@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Produtos</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">  <!-- Carrega o arquivo CSS -->
+</head>
+<body>
+    <header>
+        <h1>Lista de Produtos</h1>  <!-- Cabeçalho da página -->
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>  <!-- Cabeçalho da coluna ID -->
+                <th>Armazém</th>  <!-- Cabeçalho da coluna Armazém -->
+                <th>Nome</th>  <!-- Cabeçalho da coluna Nome -->
+                <th>Preço</th>  <!-- Cabeçalho da coluna Preço -->
+                <th>Descrição</th>  <!-- Cabeçalho da coluna Descrição -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos %}  <!-- Itera sobre os produtos -->
+                <tr>
+                    <td>{{ produto.id_produto }}</td>  <!-- Exibe o ID do produto -->
+                    <td>{{ produto.id_armazem }}</td>  <!-- Exibe o ID do armazém -->
+                    <td>{{ produto.nome }}</td>  <!-- Exibe o nome do produto -->
+                    <td>{{ produto.preco }}</td>  <!-- Exibe o preço do produto -->
+                    <td>{{ produto.descricao }}</td>  <!-- Exibe a descrição do produto -->
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-row">Nenhum produto encontrado.</td>  <!-- Mensagem quando não há produtos -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'adicionar_produto' %}" class="add-button">Adicionar Novo Produto</a>  <!-- Link para adicionar um novo produto -->
+    <a href="{% url 'dashboard' %}" class="add-button">Voltar</a>
+</body>
+</html>

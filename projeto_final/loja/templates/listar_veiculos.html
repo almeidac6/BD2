@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Veículos</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">  <!-- Carrega o arquivo CSS -->
+</head>
+<body>
+    <header>
+        <h1>Lista de Veículos</h1>  <!-- Cabeçalho da página -->
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>  <!-- Cabeçalho da coluna ID -->
+                <th>Matrícula</th>  <!-- Cabeçalho da coluna Matrícula -->
+                <th>Modelo</th>  <!-- Cabeçalho da coluna Modelo -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for veiculo in veiculos %}  <!-- Itera sobre os veículos -->
+                <tr>
+                    <td>{{ veiculo.id_veiculo }}</td>  <!-- Exibe o ID do veículo -->
+                    <td>{{ veiculo.matricula }}</td>  <!-- Exibe a matrícula do veículo -->
+                    <td>{{ veiculo.modelo }}</td>  <!-- Exibe o modelo do veículo -->
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="empty-row">Nenhum veículo encontrado.</td>  <!-- Mensagem quando não há veículos -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'adicionar_veiculo' %}" class="add-button">Adicionar Novo Veículo</a>  <!-- Link para adicionar um novo veículo -->
+    <a href="{% url 'dashboard' %}" class="add-button">Voltar</a>
+</body>
+</html>

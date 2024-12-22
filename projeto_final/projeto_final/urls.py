@@ -19,6 +19,16 @@ from django.urls import path
 from loja import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('', views.dashboard, name='dashboard'),
+    path('clientes/', views.listar_clientes, name='listar_clientes'),
+    path('clientes/adicionar/', views.adicionar_cliente, name='adicionar_cliente'),
+    path('armazens/', views.listar_armazens, name='listar_armazens'),
+    path('armazens/adicionar/', views.adicionar_armazem, name='adicionar_armazem'),
+    path('produtos/', views.listar_produtos, name='listar_produtos'),
+    path('produtos/adicionar/', views.adicionar_produto, name='adicionar_produto'),
+    path('funcionarios/', views.listar_funcionarios, name='listar_funcionarios'),
+    path('funcionarios/adicionar/', views.adicionar_funcionario, name='adicionar_funcionario'),
+    path('veiculos/', views.listar_veiculos, name='listar_veiculos'),
+    path('veiculos/adicionar/', views.adicionar_veiculo, name='adicionar_veiculo'),
 ]
+

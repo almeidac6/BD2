@@ -1,0 +1,36 @@
+<!-- listar_funcionarios.html -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Funcionários</title>
+</head>
+<body>
+    <h1>Lista de Funcionários</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for funcionario in funcionarios %}
+                <tr>
+                    <td>{{ funcionario.id_funcionario }}</td>
+                    <td>{{ funcionario.nome }}</td>
+                    <td>{{ funcionario.telefone }}</td>
+                    <td>{{ funcionario.email }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'adicionar_funcionario' %}">Adicionar Novo Funcionário</a>
+    <a href="{% url 'dashboard' %}" class="add-button">Voltar</a>
+</body>
+</html>
