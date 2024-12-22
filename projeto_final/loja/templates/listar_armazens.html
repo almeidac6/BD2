@@ -8,32 +8,42 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <h1>Lista de Armazéns</h1>
+    <header>
+        <h1>Lista de Armazéns</h1>
+    </header>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Localização</th>
-                <th>Capacidade</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for armazem in armazens %}
+    <div class="form-container">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ armazem.id_armazem }}</td>
-                    <td>{{ armazem.localizacao }}</td>
-                    <td>{{ armazem.capacidade }}</td>
+                    <th>ID</th>
+                    <th>Localização</th>
+                    <th>Capacidade</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="3" class="empty-row">Nenhum armazém encontrado.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for armazem in armazens %}
+                    <tr>
+                        <td>{{ armazem.id_armazem }}</td>
+                        <td>{{ armazem.localizacao }}</td>
+                        <td>{{ armazem.capacidade }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="empty-row">Nenhum armazém encontrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <a href="{% url 'dashboard' %}" class="add-button">Voltar</a>
-    <a href="{% url 'adicionar_armazem' %}" class="add-button">Adicionar Novo Armazém</a>
+        <!-- Botão de Adicionar -->
+        <form action="{% url 'adicionar_armazem' %}" method="get">
+            <button type="submit" class="submit-button">Adicionar Novo Armazém</button>
+        </form>
+    </div>
+
+    <div class="back-link">
+        <a href="{% url 'dashboard' %}" class="back-button">Voltar</a>
+    </div>
 </body>
 </html>

@@ -1,20 +1,28 @@
 <!-- adicionar_veiculo.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Veículo</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <h1>Adicionar Veículo</h1>
+    <header>
+        <h1>Adicionar Veículo</h1>
+    </header>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Adicionar Veículo</button>
-    </form>
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="submit-button">Adicionar Veículo</button>
+        </form>
+    </div>
 
-    <a href="{% url 'listar_veiculos' %}">Voltar para a Lista de Veículos</a>
+        <div class="back-link">
+            <a href="{% url 'listar_veiculos' %}" class="back-button">Voltar para a lista de veículos</a>
+        </div>
 </body>
 </html>

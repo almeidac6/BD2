@@ -1,22 +1,29 @@
-<!-- loja/templates/loja/registro_cliente.html -->
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registar Cliente</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">  <!-- Carrega o arquivo CSS -->
 </head>
 <body>
-    <h1>Registar Cliente</h1>
+    <header>
+        <h1>Registar Cliente</h1>  <!-- Cabeçalho da página -->
+    </header>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Registar</button>
-    </form>
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}  <!-- Exibe o formulário com os campos como parágrafos -->
+            </div>
+            <button type="submit" class="submit-button">Registar</button>  <!-- Botão de envio -->
+        </form>
+    </div>
 
-    <br>
-    <a href="{% url 'dashboard' %}">Voltar à página inicial</a>
+    <div class="back-link">
+        <a href="{% url 'listar_clientes' %}" class="back-button">Voltar à página inicial</a>  <!-- Link para voltar à página inicial -->
+    </div>
 </body>
 </html>

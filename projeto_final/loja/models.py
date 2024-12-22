@@ -12,6 +12,8 @@ class Cliente(models.Model):
         app_label = 'loja'
 
     def save(self, *args, **kwargs):
+        if not self.pk and self.password:  # Se a senha for fornecida e o cliente não tem um ID ainda
+            self.password = make_password(self.password)  # Criptografa a senha
         super(Cliente, self).save(using='mongo', *args, **kwargs)
 
     def __str__(self):

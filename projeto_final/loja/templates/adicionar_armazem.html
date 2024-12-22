@@ -1,20 +1,30 @@
-<!-- adicionar_armazem.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Armazém</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">  <!-- Carrega o arquivo CSS -->
 </head>
 <body>
-    <h1>Adicionar Armazém</h1>
+    <header>
+        <h1>Adicionar Armazém</h1>  <!-- Cabeçalho da página -->
+    </header>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Adicionar Armazém</button>
-    </form>
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}  <!-- Exibe o formulário com os campos como parágrafos -->
+            </div>
+            <button type="submit" class="submit-button">Adicionar Armazém</button>  <!-- Botão de envio -->
+        </form>
+    </div>
 
-    <a href="{% url 'listar_armazens' %}">Voltar para a lista de armazéns</a>
+    <div class="back-link">
+        <a href="{% url 'listar_armazens' %}" class="back-button">Voltar para a lista de armazéns</a>  <!-- Link para voltar à lista -->
+    </div>
+
 </body>
 </html>

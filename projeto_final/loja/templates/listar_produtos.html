@@ -5,41 +5,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Produtos</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">  <!-- Carrega o arquivo CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <header>
-        <h1>Lista de Produtos</h1>  <!-- Cabeçalho da página -->
-    </header>
+<header>
+    <h1>Lista de Produtos</h1>
+</header>
 
+<div class="form-container">
     <table>
         <thead>
-            <tr>
-                <th>ID</th>  <!-- Cabeçalho da coluna ID -->
-                <th>Armazém</th>  <!-- Cabeçalho da coluna Armazém -->
-                <th>Nome</th>  <!-- Cabeçalho da coluna Nome -->
-                <th>Preço</th>  <!-- Cabeçalho da coluna Preço -->
-                <th>Descrição</th>  <!-- Cabeçalho da coluna Descrição -->
-            </tr>
+        <tr>
+            <th>ID</th>
+            <th>Armazém</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Descrição</th>
+        </tr>
         </thead>
         <tbody>
-            {% for produto in produtos %}  <!-- Itera sobre os produtos -->
-                <tr>
-                    <td>{{ produto.id_produto }}</td>  <!-- Exibe o ID do produto -->
-                    <td>{{ produto.id_armazem }}</td>  <!-- Exibe o ID do armazém -->
-                    <td>{{ produto.nome }}</td>  <!-- Exibe o nome do produto -->
-                    <td>{{ produto.preco }}</td>  <!-- Exibe o preço do produto -->
-                    <td>{{ produto.descricao }}</td>  <!-- Exibe a descrição do produto -->
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5" class="empty-row">Nenhum produto encontrado.</td>  <!-- Mensagem quando não há produtos -->
-                </tr>
-            {% endfor %}
+        {% for produto in produtos %}
+            <tr>
+                <td>{{ produto.id_produto }}</td>
+                <td>
+                    {% for a in armazens %}
+                        {% if a.id_armazem == produto.id_armazem %}
+                            {{ a.localizacao }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ produto.nome }}</td>
+                <td>{{ produto.preco }}</td>
+                <td>{{ produto.descricao }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" class="empty-row">Nenhum produto encontrado.</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 
-    <a href="{% url 'adicionar_produto' %}" class="add-button">Adicionar Novo Produto</a>  <!-- Link para adicionar um novo produto -->
-    <a href="{% url 'dashboard' %}" class="add-button">Voltar</a>
+    <!-- Botão de Adicionar -->
+    <form action="{% url 'adicionar_produto' %}" method="get">
+        <button type="submit" class="submit-button">Adicionar Novo Produto</button>
+    </form>
+</div>
+
+<div class="back-link">
+    <a href="{% url 'dashboard' %}" class="back-button">Voltar</a>
+</div>
 </body>
 </html>

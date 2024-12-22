@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Produtos Disponíveis</h1>
+    </header>
+    <div class="form-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Descrição</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                    <tr>
+                        <td>{{ produto.id_produto }}</td>
+                        <td>{{ produto.nome }}</td>
+                        <td>{{ produto.preco|floatformat:2 }}</td>
+                        <td>{{ produto.descricao }}</td>
+                        <td>
+                            <button class="submit-button" onclick="adicionarAoCarrinho('{{ produto.id_produto }}', '{{ produto.nome }}', {{ produto.preco }})">
+                                Adicionar ao Carrinho
+                            </button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">Nenhum produto disponível.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="form-container">
+        <h2>Carrinho</h2>
+        <ul id="carrinho-lista"></ul>
+        <button class="submit-button" onclick="limparCarrinho()">Limpar Carrinho</button>
+    </div>
+
+    <script>
+        // Função para obter o carrinho do Local Storage
+        function obterCarrinho() {
+            const carrinho = localStorage.getItem('carrinho');
+            return carrinho ? JSON.parse(carrinho) : [];
+        }
+
+        // Função para salvar o carrinho no Local Storage
+        function salvarCarrinho(carrinho) {
+            localStorage.setItem('carrinho', JSON.stringify(carrinho));
+            atualizarCarrinho();
+        }
+
+        // Função para adicionar produto ao carrinho
+        function adicionarAoCarrinho(id, nome, preco) {
+            const carrinho = obterCarrinho();
+            const itemExistente = carrinho.find(item => item.id === id);
+
+            if (itemExistente) {
+                itemExistente.quantidade += 1;
+            } else {
+                carrinho.push({ id, nome, preco, quantidade: 1 });
+            }
+
+            salvarCarrinho(carrinho);
+        }
+
+        // Função para limpar o carrinho
+        function limparCarrinho() {
+            localStorage.removeItem('carrinho');
+            atualizarCarrinho();
+        }
+
+        // Função para atualizar a exibição do carrinho
+        function atualizarCarrinho() {
+            const carrinho = obterCarrinho();
+            const carrinhoLista = document.getElementById('carrinho-lista');
+            carrinhoLista.innerHTML = '';
+
+            carrinho.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.nome} - ${item.quantidade} x ${item.preco.toFixed(2)} €`;
+                carrinhoLista.appendChild(li);
+            });
+
+            if (carrinho.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'Carrinho vazio.';
+                carrinhoLista.appendChild(li);
+            }
+        }
+
+        // Atualizar carrinho na carga inicial
+        atualizarCarrinho();
+    </script>
+</body>
+</html>

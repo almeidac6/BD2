@@ -26,6 +26,12 @@ class ProdutoForm(forms.ModelForm):
         label="Selecione o Armazém"
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Atualizar dinamicamente a lista de armazéns
+        armazens = Armazem.objects.using('mongo').all()
+        self.fields['id_armazem'].choices = [(armazem.id_armazem, armazem.localizacao) for armazem in armazens]
+
 class FuncionarioForm(forms.ModelForm):
     class Meta:
         model = Funcionario
@@ -35,3 +41,7 @@ class VeiculoForm(forms.ModelForm):
     class Meta:
         model = Veiculo
         fields = ['matricula', 'modelo']
+
+class LoginForm(forms.Form):
+    email = forms.CharField(label="E-mail", max_length=250)
+    password = forms.CharField(label="Senha", widget=forms.PasswordInput)
