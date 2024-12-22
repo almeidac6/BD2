@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+{% csrf_token %}
+
     <header>
         <h1>Produtos Disponíveis</h1>
     </header>
@@ -43,10 +45,12 @@
             </tbody>
         </table>
     </div>
+
     <div class="form-container">
         <h2>Carrinho</h2>
         <ul id="carrinho-lista"></ul>
         <button class="submit-button" onclick="limparCarrinho()">Limpar Carrinho</button>
+        <button class="submit-button" onclick="finalizarCompra()">Finalizar Compra</button>
     </div>
 
     <script>
@@ -99,6 +103,45 @@
                 li.textContent = 'Carrinho vazio.';
                 carrinhoLista.appendChild(li);
             }
+        }
+
+        // Função para finalizar a compra e redirecionar para o checkout
+        function finalizarCompra() {
+            const carrinho = obterCarrinho();
+            if (carrinho.length === 0) {
+                alert("O carrinho está vazio. Adicione produtos antes de finalizar a compra.");
+                return;
+            }
+
+            // Enviar o carrinho para o servidor (exemplo simples com query string)
+            // Redirecionar para a página de checkout
+            const carrinhoStr = JSON.stringify(carrinho);
+            localStorage.removeItem('carrinho');  // Limpar o carrinho local após redirecionar
+
+            // Criar um formulário invisível para enviar o carrinho ao backend
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{% url 'checkout' %}";  // Substitua com a URL de checkout
+
+            // Obter o token CSRF
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // Adicionar o CSRF token ao formulário
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+
+            // Adicionar o carrinho ao formulário
+            const carrinhoInput = document.createElement('input');
+            carrinhoInput.type = 'hidden';
+            carrinhoInput.name = 'carrinho';
+            carrinhoInput.value = carrinhoStr;
+            form.appendChild(carrinhoInput);
+
+            document.body.appendChild(form);
+            form.submit();  // Enviar o formulário
         }
 
         // Atualizar carrinho na carga inicial

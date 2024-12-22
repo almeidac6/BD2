@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra Concluída</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Compra Concluída</h1>
+    </header>
+
+    <div class="form-container">
+        <h2>Compra Realizada com Sucesso!</h2>
+        <p>Obrigado pela sua compra. Em breve, você receberá a confirmação de envio.</p>
+        <div class="back-link">
+            <a href="{% url 'loja' %}" class="back-button">Voltar à Página Inicial</a>
+        </div>
+    </div>
+</body>
+</html>

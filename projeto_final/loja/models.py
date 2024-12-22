@@ -87,11 +87,48 @@ class Veiculo(models.Model):
     def __str__(self):
         return self.modelo
 
-class Carrinho(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
-    quantidade = models.IntegerField(default=1)
-    data_adicionado = models.DateTimeField(auto_now_add=True)
+####### POSTGRES
 
-    def __str__(self):
-        return f"{self.quantidade} x {self.produto.nome}"
+class Encomendas(models.Model):
+    idencomendas = models.AutoField(primary_key=True)
+    idcliente = models.IntegerField()
+    morada = models.CharField(max_length=250)
+    datacriacao = models.DateField()
+    status = models.CharField(max_length=250)
+
+    class Meta:
+        managed = False
+        db_table = 'encomendas'
+
+class EncomendaItem(models.Model):
+    encomenda_id = models.IntegerField()  # ID da encomenda
+    produto_id = models.CharField(max_length=50)  # ID do produto
+    quantidade = models.IntegerField()
+
+    class Meta:
+        db_table = 'encomenda_itens'
+        app_label = 'loja'
+
+
+class Entregas(models.Model):
+    identregas = models.AutoField(primary_key=True)
+    idpagamentos = models.IntegerField()
+    idfuncionario = models.IntegerField()
+    idveiculo = models.IntegerField()
+    data = models.DateField()
+    situacao = models.CharField(max_length=250)
+
+    class Meta:
+        managed = False
+        db_table = 'entregas'
+
+class Pagamentos(models.Model):
+    idpagamentos = models.AutoField(primary_key=True)
+    idencomendas = models.IntegerField()
+    data = models.DateField()
+    valor = models.FloatField()
+    metodo = models.CharField(max_length=250)
+
+    class Meta:
+        managed = False
+        db_table = 'pagamentos'

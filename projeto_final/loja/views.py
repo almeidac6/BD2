@@ -4,9 +4,11 @@ from django.contrib.auth.forms import *
 from django.contrib.auth.hashers import *
 from django.contrib import *
 from django.http import *
+from django.utils import *
 from .models import *
 from .forms import *
 from .util import *
+import json
 
 def dashboard(request):
     if 'funcionario_id' not in request.session:
@@ -142,7 +144,7 @@ def login_cliente(request):
                 request.session['cliente_id'] = cliente.id_cliente
                 request.session['cliente_nome'] = cliente.nome
                 messages.success(request, f"Bem-vindo, {cliente.nome}!")
-                return redirect('dashboard')
+                return redirect('loja')
             else:
                 messages.error(request, "Senha incorreta. Tente novamente.")
         except Cliente.DoesNotExist:
@@ -170,64 +172,53 @@ def login_funcionario(request):
 
     return render(request, 'login_funcionario.html')
 
-def listar_produtos_c(request):
-    produtos = Produto.objects.using('mongo').all()
-    return render(request, 'loja.html', {'produtos': produtos})
+def loja(request):
+    if 'cliente_id' not in request.session:
+        return redirect('login_cliente')
+
+    produtos = Produto.objects.using('mongo').all()  # Obtém todos os produtos da loja
+
+    # Recupera o carrinho da sessão, caso exista
+    carrinho = request.session.get('carrinho', [])
+
+    return render(request, 'loja.html', {'produtos': produtos, 'carrinho': carrinho})
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def login_view(request):
+def checkout(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('dashboard')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'login_cliente.html', {'form': form})
+        # Verifica os dados do carrinho no POST
+        try:
+            carrinho_data = request.POST.get('carrinho')
+            if carrinho_data:
+                carrinho = json.loads(carrinho_data)
 
-def adicionar_carrinho(request, produto_id):
-    produto = Produto.objects.get(id=produto_id)
-    carrinho, created = Carrinho.objects.get_or_create(cliente=request.user.cliente)
-    carrinho.quantidade += 1
-    carrinho.save()
-    return redirect('carrinho')
+                # Armazena os itens no carrinho da sessão
+                request.session['carrinho'] = carrinho
 
-def carrinho_view(request):
-    carrinho = Carrinho.objects.filter(cliente=request.user.cliente)
-    return render(request, 'carrinho.html', {'carrinho': carrinho})
+                # Redireciona para a página de confirmação
+                return redirect('checkout_final')
 
-def remover_carrinho(request, item_id):
-    item = get_object_or_404(Carrinho, id=item_id)
-    item.delete()
-    return redirect('carrinho')
+        except Exception as e:
+            print(f"Erro ao processar o carrinho: {e}")
+            messages.error(request, "Erro ao processar o carrinho.")
+            return redirect('erro')
 
-def finalizar_compra(request):
-    # Obter os itens no carrinho
-    carrinho = Carrinho.objects.filter(cliente=request.user.cliente)
+    return render(request, 'checkout.html')  # Substitua pelo seu template
 
-    return render(request, 'finalizar_compra.html', {'carrinho': carrinho})
+
+def checkout_final(request):
+    # Recupera os dados do carrinho da sessão
+    carrinho = request.session.get('carrinho', [])
+
+    # Caso o carrinho esteja vazio ou não exista
+    if not carrinho:
+        messages.error(request, "Carrinho vazio ou não encontrado.")
+        return redirect('loja')  # Redireciona para a loja se o carrinho estiver vazio
+
+    if 'carrinho' in request.session:
+        del request.session['carrinho']
+
+    # Aqui você pode processar o pagamento ou realizar outras ações
+
+    # Exibe os dados do carrinho na página de confirmação
+    return render(request, 'checkout_final.html', {'carrinho': carrinho})

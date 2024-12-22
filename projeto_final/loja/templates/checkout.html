@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Checkout</h1>
+    </header>
+
+    <div class="form-container">
+        <h2>Resumo do Pedido</h2>
+
+        <h3>Produtos no Carrinho:</h3>
+        <ul>
+            {% for item in carrinho %}
+                <li>{{ item.produto.nome }} - {{ item.quantidade }} x {{ item.produto.preco }}€</li>
+            {% empty %}
+                <li>Carrinho vazio.</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Total: {{ total }}€</h3>
+
+        <h3>Insira seus Dados para Finalizar o Checkout</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="id_cliente">ID Cliente:</label>
+            <input type="text" name="id_cliente" required><br>
+
+            <label for="morada">Morada:</label>
+            <input type="text" name="morada" required><br>
+
+            <label for="metodo_pagamento">Método de Pagamento:</label>
+            <select name="metodo_pagamento" id="metodo_pagamento" required>
+                <option value="cartao">Cartão de Crédito</option>
+                <option value="boleto">Boleto</option>
+                <option value="paypal">Paypal</option>
+            </select><br>
+
+            <button type="submit">Finalizar Compra</button>
+        </form>
+    </div>
+</body>
+</html>
