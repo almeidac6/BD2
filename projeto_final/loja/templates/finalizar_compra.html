@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra</title>
+</head>
+<body>
+    <h1>Finalizar Compra</h1>
+
+    <h2>Resumo da Encomenda</h2>
+
+    {% if carrinho %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço</th>
+                    <th>Quantidade</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carrinho %}
+                    <tr>
+                        <td>{{ item.produto.nome }}</td>
+                        <td>{{ item.produto.preco }} €</td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>{{ item.produto.preco * item.quantidade }} €</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Total:
+            {% with total=0 %}
+                {% for item in carrinho %}
+                    {% with total=total + item.produto.preco * item.quantidade %}
+                    {% endwith %}
+                {% endfor %}
+                {{ total }} €
+            {% endwith %}
+        </h3>
+
+        <h2>Detalhes da Compra</h2>
+
+        <form method="POST" action="#">
+            {% csrf_token %}
+            <label for="morada">Morada:</label>
+            <input type="text" id="morada" name="morada" required>
+
+            <label for="metodo">Método de Pagamento:</label>
+            <select name="metodo" id="metodo" required>
+                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                <option value="Transferência Bancária">Transferência Bancária</option>
+                <option value="PayPal">PayPal</option>
+            </select>
+
+            <button type="submit">Finalizar Compra</button>
+        </form>
+    {% else %}
+        <p>O seu carrinho está vazio. Não é possível finalizar a compra.</p>
+    {% endif %}
+</body>
+</html>

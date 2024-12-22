@@ -4,6 +4,14 @@ from .models import *
 from .forms import *
 from .util import *
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import Carrinho
+
+
 def dashboard(request):
     return render(request, 'dashboard.html')
 
@@ -91,3 +99,36 @@ def adicionar_veiculo(request):
         form = VeiculoForm()
 
     return render(request, 'adicionar_veiculo.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
+
+def adicionar_carrinho(request, produto_id):
+    produto = Produto.objects.get(id=produto_id)
+    carrinho, created = Carrinho.objects.get_or_create(cliente=request.user.cliente)
+    carrinho.quantidade += 1
+    carrinho.save()
+    return redirect('carrinho')
+
+def carrinho_view(request):
+    carrinho = Carrinho.objects.filter(cliente=request.user.cliente)
+    return render(request, 'carrinho.html', {'carrinho': carrinho})
+
+def remover_carrinho(request, item_id):
+    item = get_object_or_404(Carrinho, id=item_id)
+    item.delete()
+    return redirect('carrinho')
+
+def finalizar_compra(request):
+    # Obter os itens no carrinho
+    carrinho = Carrinho.objects.filter(cliente=request.user.cliente)
+
+    return render(request, 'finalizar_compra.html', {'carrinho': carrinho})
