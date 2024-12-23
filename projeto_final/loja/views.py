@@ -9,6 +9,7 @@ from .models import *
 from .forms import *
 from .util import *
 import json
+from datetime import *
 
 def dashboard(request):
     if 'funcionario_id' not in request.session:
@@ -210,12 +211,14 @@ def checkout_final(request):
 
         # Capturar os dados do formulário
         cliente_id = request.session.get('cliente_id')
-        morada = "meow"
+        morada = request.POST.get('morada')
 
         # Criar a encomenda
         encomenda = Encomendas.objects.create(
             idcliente=cliente_id,
             morada=morada,
+            datacriacao=int(round(datetime.now().timestamp())),
+            status="pendente"
         )
 
         # Adicionar os itens ao banco de dados
@@ -234,14 +237,6 @@ def checkout_final(request):
 
 def sucesso(request):
     return render(request, 'sucesso.html')
-
-
-from django.shortcuts import render, redirect
-from .models import Encomendas, Pagamentos
-
-from django.shortcuts import render, redirect
-from .models import Encomendas, Pagamentos
-
 
 def pagamentos_pendentes(request):
     if 'cliente_id' not in request.session:
@@ -299,11 +294,11 @@ def registrar_pagamento(request, idencomenda):
     # Registrar o pagamento
     pagamento = Pagamentos(
         idencomendas=encomenda.idencomendas,
-        data=timezone.now(),
+        data=int(round(datetime.now().timestamp())),
         valor=10,  # Supondo que você tenha uma função que calcula o total da encomenda
         metodo="Cartão de Crédito",  # Exemplo de método, isso pode ser alterado conforme a lógica do seu sistema
     )
     pagamento.save()
 
     # Redirecionar para a página de detalhes do pagamento ou para outra página de sucesso
-    return redirect('detalhes_pagamento', idencomenda)
+    return redirect('pagamentos_pendentes')

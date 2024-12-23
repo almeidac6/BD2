@@ -12,52 +12,47 @@
         <h1>Pagamentos Pendentes</h1>
     </header>
 
-    <div class="form-container">
+    <main class="form-container">
         <h2>Seus Pagamentos Pendentes</h2>
 
         {% if pagamentos %}
             <table>
                 <thead>
                     <tr>
-                        <th>ID Pagamento</th>
-                        <th>Valor</th>
-                        <th>Data</th>
-                        <th>Metodo de Pagamento</th>
-                        <th>Status</th>
-                        <th>Detalhes</th>
+                        <th>Encomenda</th>
+                        <th>Itens</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for pagamento in pagamentos %}
                         <tr>
-                            <td>{{ pagamento.idpagamentos }}</td>
-                            <td>{{ pagamento.valor }}€</td>
-                            <td>{{ pagamento.data }}</td>
-                            <td>{{ pagamento.metodo }}</td>
-                            <td>{{ pagamento.status }}</td>
+                            <td>#{{ pagamento.encomenda.idencomendas }}</td>
+                            <td>
+                                <ul>
+                                    {% for item in pagamento.itens %}
+                                        <li>{{ item.produto }} - {{ item.quantidade }} x {{ item.preco|floatformat:2 }}€</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                 <form action="{% url 'registrar_pagamento' pagamento.encomenda.idencomendas %}" method="POST">
+                                    {% csrf_token %}
+                                    <button class="submit-button" type="submit">Criar Pagamento</button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p>Não há pagamentos pendentes.</p>
+            <p class="no-data">Não há pagamentos pendentes.</p>
         {% endif %}
 
-        <!-- Exibição dos itens da encomenda -->
-        {% for pagamento in pagamentos %}
-            <div class="encomenda">
-                <h3>Encomenda #{{ pagamento.encomenda.idencomendas }}</h3>
-                <ul>
-                    {% for item in pagamento.itens %}
-                        <li>{{ item.produto }} - {{ item.quantidade }} x {{ item.preco }}€</li>
-                    {% endfor %}
-                </ul>
-                <p><strong>Status:</strong> Pendente</p>
-                <a href="{% url 'detalhes_pagamento' pagamento.encomenda.idencomendas %}">Ver Detalhes</a>
-            </div>
-        {% empty %}
-            <p>Não há pagamentos pendentes.</p>
-        {% endfor %}
-    </div>
+        <!-- Botão de voltar -->
+        <div class="back-link">
+            <a href="{% url 'loja' %}" class="back-button">Voltar</a>
+        </div>
+    </main>
 </body>
 </html>
