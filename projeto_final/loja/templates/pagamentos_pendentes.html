@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamentos Pendentes</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Pagamentos Pendentes</h1>
+    </header>
+
+    <div class="form-container">
+        <h2>Seus Pagamentos Pendentes</h2>
+
+        {% if pagamentos %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Pagamento</th>
+                        <th>Valor</th>
+                        <th>Data</th>
+                        <th>Metodo de Pagamento</th>
+                        <th>Status</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pagamento in pagamentos %}
+                        <tr>
+                            <td>{{ pagamento.idpagamentos }}</td>
+                            <td>{{ pagamento.valor }}€</td>
+                            <td>{{ pagamento.data }}</td>
+                            <td>{{ pagamento.metodo }}</td>
+                            <td>{{ pagamento.status }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não há pagamentos pendentes.</p>
+        {% endif %}
+
+        <!-- Exibição dos itens da encomenda -->
+        {% for pagamento in pagamentos %}
+            <div class="encomenda">
+                <h3>Encomenda #{{ pagamento.encomenda.idencomendas }}</h3>
+                <ul>
+                    {% for item in pagamento.itens %}
+                        <li>{{ item.produto }} - {{ item.quantidade }} x {{ item.preco }}€</li>
+                    {% endfor %}
+                </ul>
+                <p><strong>Status:</strong> Pendente</p>
+                <a href="{% url 'detalhes_pagamento' pagamento.encomenda.idencomendas %}">Ver Detalhes</a>
+            </div>
+        {% empty %}
+            <p>Não há pagamentos pendentes.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

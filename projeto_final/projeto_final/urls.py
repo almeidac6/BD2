@@ -32,8 +32,11 @@ urlpatterns = [
     path('veiculos/adicionar/', views.adicionar_veiculo, name='adicionar_veiculo'),
     path('login/cliente/', views.login_cliente, name='login_cliente'),
     path('login/funcionario/', views.login_funcionario, name='login_funcionario'),
-    path('loja', views.loja, name='loja'),
-    path('checkout/', views.checkout, name='checkout'),
-    path('checkout_final/', views.checkout_final, name='checkout_final'),
+    path('loja/', views.loja, name='loja'),
+    path('checkout/', views.checkout_final, name='checkout'),
+    path('sucesso/', views.sucesso, name='sucesso'),
+    path('pagamentos/pendentes/', views.pagamentos_pendentes, name='pagamentos_pendentes'),
+    path('pagamento/detalhes/<int:idencomenda>/', views.detalhes_pagamento, name='detalhes_pagamento'),
+    path('pagamento/registrar/<int:idencomenda>/', views.registrar_pagamento, name='registrar_pagamento'),
 ]
 

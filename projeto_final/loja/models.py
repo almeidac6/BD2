@@ -91,31 +91,36 @@ class Veiculo(models.Model):
 
 class Encomendas(models.Model):
     idencomendas = models.AutoField(primary_key=True)
-    idcliente = models.IntegerField()
+    idcliente = models.CharField(max_length=250)
     morada = models.CharField(max_length=250)
-    datacriacao = models.DateField()
+    datacriacao = models.CharField(max_length=250)
     status = models.CharField(max_length=250)
 
     class Meta:
         managed = False
         db_table = 'encomendas'
 
-class EncomendaItem(models.Model):
-    encomenda_id = models.IntegerField()  # ID da encomenda
-    produto_id = models.CharField(max_length=50)  # ID do produto
-    quantidade = models.IntegerField()
+class ItemEncomenda(models.Model):
+    iditemencomenda = models.AutoField(primary_key=True)
+    encomenda = models.CharField(max_length=250)
+    produto = models.CharField(max_length=250)
+    quantidade = models.CharField(max_length=250)
+    preco = models.CharField(max_length=250)
 
     class Meta:
-        db_table = 'encomenda_itens'
-        app_label = 'loja'
+        managed = False
+        db_table = 'item_encomenda'
+
+    def __str__(self):
+        return f'{self.produto.nome} - {self.quantidade} x {self.preco}€'
 
 
 class Entregas(models.Model):
     identregas = models.AutoField(primary_key=True)
-    idpagamentos = models.IntegerField()
-    idfuncionario = models.IntegerField()
-    idveiculo = models.IntegerField()
-    data = models.DateField()
+    idpagamentos = models.CharField(max_length=250)
+    idfuncionario = models.CharField(max_length=250)
+    idveiculo = models.CharField(max_length=250)
+    data = models.CharField(max_length=250)
     situacao = models.CharField(max_length=250)
 
     class Meta:
@@ -124,9 +129,9 @@ class Entregas(models.Model):
 
 class Pagamentos(models.Model):
     idpagamentos = models.AutoField(primary_key=True)
-    idencomendas = models.IntegerField()
-    data = models.DateField()
-    valor = models.FloatField()
+    idencomendas = models.CharField(max_length=250)
+    data = models.CharField(max_length=250)
+    valor = models.CharField(max_length=250)
     metodo = models.CharField(max_length=250)
 
     class Meta:

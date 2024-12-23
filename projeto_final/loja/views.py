@@ -185,40 +185,125 @@ def loja(request):
 
 
 def checkout(request):
-    if request.method == 'POST':
-        # Verifica os dados do carrinho no POST
-        try:
-            carrinho_data = request.POST.get('carrinho')
-            if carrinho_data:
-                carrinho = json.loads(carrinho_data)
+    carrinho = request.POST.get('carrinho')
+    if carrinho:
+        carrinho = json.loads(carrinho)
+    else:
+        carrinho = []
 
-                # Armazena os itens no carrinho da sessão
-                request.session['carrinho'] = carrinho
+    # Calcular o total
+    total = sum(item['preco'] * item['quantidade'] for item in carrinho)
 
-                # Redireciona para a página de confirmação
-                return redirect('checkout_final')
-
-        except Exception as e:
-            print(f"Erro ao processar o carrinho: {e}")
-            messages.error(request, "Erro ao processar o carrinho.")
-            return redirect('erro')
-
-    return render(request, 'checkout.html')  # Substitua pelo seu template
-
+    return render(request, 'checkout.html', {
+        'carrinho': carrinho,
+        'total': total
+    })
 
 def checkout_final(request):
-    # Recupera os dados do carrinho da sessão
-    carrinho = request.session.get('carrinho', [])
+    if request.method == 'POST':
+        # Recuperar o carrinho do POST
+        carrinho_data = request.POST.get('carrinho')
+        if not carrinho_data:
+            return HttpResponse("Carrinho vazio", status=400)
 
-    # Caso o carrinho esteja vazio ou não exista
-    if not carrinho:
-        messages.error(request, "Carrinho vazio ou não encontrado.")
-        return redirect('loja')  # Redireciona para a loja se o carrinho estiver vazio
+        carrinho = json.loads(carrinho_data)
 
-    if 'carrinho' in request.session:
-        del request.session['carrinho']
+        # Capturar os dados do formulário
+        cliente_id = request.session.get('cliente_id')
+        morada = "meow"
 
-    # Aqui você pode processar o pagamento ou realizar outras ações
+        # Criar a encomenda
+        encomenda = Encomendas.objects.create(
+            idcliente=cliente_id,
+            morada=morada,
+        )
 
-    # Exibe os dados do carrinho na página de confirmação
-    return render(request, 'checkout_final.html', {'carrinho': carrinho})
+        # Adicionar os itens ao banco de dados
+        for item in carrinho:
+            produto = Produto.objects.using('mongo').get(id_produto=item['id'])
+            ItemEncomenda.objects.create(
+                encomenda=encomenda.idencomendas,
+                produto=produto.id_produto,
+                quantidade=item['quantidade'],
+                preco=item['preco']
+            )
+
+        return redirect('sucesso')  # Redirecionar para uma página de sucesso
+
+    return render(request, 'checkout_final.html')
+
+def sucesso(request):
+    return render(request, 'sucesso.html')
+
+
+from django.shortcuts import render, redirect
+from .models import Encomendas, Pagamentos
+
+from django.shortcuts import render, redirect
+from .models import Encomendas, Pagamentos
+
+
+def pagamentos_pendentes(request):
+    if 'cliente_id' not in request.session:
+        return redirect('login_cliente')
+
+    # Buscar todas as encomendas do cliente logado
+    encomendas = Encomendas.objects.filter(idcliente=request.session.get('cliente_id'))
+
+    pagamentos = []
+
+    for encomenda in encomendas:
+        # Buscar itens relacionados à encomenda com base no id da encomenda
+        itens = ItemEncomenda.objects.filter(
+            encomenda=encomenda.idencomendas)  # Usando o id da encomenda para buscar os itens
+
+        # Verificar se há algum pagamento relacionado à encomenda
+        pagamento_existe = Pagamentos.objects.filter(idencomendas=encomenda.idencomendas).exists()
+
+        # Se não houver pagamento relacionado, adicionar a encomenda com seus itens
+        if not pagamento_existe:
+            pagamentos.append({
+                'encomenda': encomenda,
+                'itens': itens
+            })
+
+    return render(request, 'pagamentos_pendentes.html', {
+        'pagamentos': pagamentos
+    })
+
+def detalhes_pagamento(request, idencomenda):
+    # Buscar a encomenda específica com base no ID da encomenda
+    encomenda = get_object_or_404(Encomendas, idencomendas=idencomenda)
+
+    # Buscar os itens da encomenda relacionada
+    itens_encomenda = ItemEncomenda.objects.filter(encomenda=idencomenda)
+
+    # Exibir os detalhes na página
+    return render(request, 'detalhes_pagamento.html', {
+        'encomenda': encomenda,
+        'itens_encomenda': itens_encomenda,
+    })
+
+def registrar_pagamento(request, idencomenda):
+    # Verificar se o cliente está autenticado
+    if 'cliente_id' not in request.session:
+        return redirect('login_cliente')
+
+    # Buscar a encomenda com base no ID
+    encomenda = get_object_or_404(Encomendas, idencomendas=idencomenda)
+
+    # Verificar se já existe um pagamento registrado para a encomenda
+    if Pagamentos.objects.filter(idencomendas=encomenda).exists():
+        return render(request, 'erro_pagamento.html', {'message': 'Pagamento já registrado para esta encomenda.'})
+
+    # Registrar o pagamento
+    pagamento = Pagamentos(
+        idencomendas=encomenda.idencomendas,
+        data=timezone.now(),
+        valor=10,  # Supondo que você tenha uma função que calcula o total da encomenda
+        metodo="Cartão de Crédito",  # Exemplo de método, isso pode ser alterado conforme a lógica do seu sistema
+    )
+    pagamento.save()
+
+    # Redirecionar para a página de detalhes do pagamento ou para outra página de sucesso
+    return redirect('detalhes_pagamento', idencomenda)

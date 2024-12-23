@@ -5,45 +5,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
-    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+{% csrf_token %}
+
     <header>
         <h1>Checkout</h1>
     </header>
 
     <div class="form-container">
-        <h2>Resumo do Pedido</h2>
-
-        <h3>Produtos no Carrinho:</h3>
-        <ul>
+        <h2>Resumo da Compra</h2>
+        <ul id="carrinho-lista">
             {% for item in carrinho %}
-                <li>{{ item.produto.nome }} - {{ item.quantidade }} x {{ item.produto.preco }}€</li>
+                <li>{{ item.nome }} - {{ item.quantidade }} x {{ item.preco|floatformat:2 }} €</li>
             {% empty %}
-                <li>Carrinho vazio.</li>
+                <li>O seu carrinho está vazio.</li>
             {% endfor %}
         </ul>
 
-        <h3>Total: {{ total }}€</h3>
+        <h3>Total: {{ total|floatformat:2 }} €</h3>
 
-        <h3>Insira seus Dados para Finalizar o Checkout</h3>
-        <form method="POST">
+        <form method="POST" action="{% url 'finalizar_compra' %}">
             {% csrf_token %}
-            <label for="id_cliente">ID Cliente:</label>
-            <input type="text" name="id_cliente" required><br>
 
-            <label for="morada">Morada:</label>
-            <input type="text" name="morada" required><br>
+            <h3>Informações de Pagamento</h3>
+            <label for="nome">Nome Completo:</label>
+            <input type="text" id="nome" name="nome" required>
 
-            <label for="metodo_pagamento">Método de Pagamento:</label>
-            <select name="metodo_pagamento" id="metodo_pagamento" required>
-                <option value="cartao">Cartão de Crédito</option>
-                <option value="boleto">Boleto</option>
-                <option value="paypal">Paypal</option>
-            </select><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
 
-            <button type="submit">Finalizar Compra</button>
+            <label for="endereco">Endereço de Entrega:</label>
+            <input type="text" id="endereco" name="endereco" required>
+
+            <label for="cartao">Número do Cartão:</label>
+            <input type="text" id="cartao" name="cartao" required>
+
+            <button type="submit" class="submit-button">Finalizar Compra</button>
         </form>
     </div>
+
+    <script>
+        // Função para obter o carrinho do Local Storage
+        function obterCarrinho() {
+            const carrinho = localStorage.getItem('carrinho');
+            return carrinho ? JSON.parse(carrinho) : [];
+        }
+
+        // Função para calcular o total do carrinho
+        function calcularTotal(carrinho) {
+            return carrinho.reduce((total, item) => total + item.preco * item.quantidade, 0);
+        }
+
+        // Atualizar a exibição do carrinho
+        function atualizarCarrinho() {
+            const carrinho = obterCarrinho();
+            const carrinhoLista = document.getElementById('carrinho-lista');
+            carrinhoLista.innerHTML = '';
+
+            carrinho.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.nome} - ${item.quantidade} x ${item.preco.toFixed(2)} €`;
+                carrinhoLista.appendChild(li);
+            });
+
+            if (carrinho.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'Carrinho vazio.';
+                carrinhoLista.appendChild(li);
+            }
+
+            // Exibir o total
+            const total = calcularTotal(carrinho);
+            const totalElement = document.getElementById('total');
+            totalElement.textContent = `Total: ${total.toFixed(2)} €`;
+        }
+
+        // Atualizar carrinho na carga inicial
+        atualizarCarrinho();
+    </script>
 </body>
 </html>

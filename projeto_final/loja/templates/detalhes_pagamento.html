@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Pagamento</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Detalhes do Pagamento</h1>
+    </header>
+
+    <div class="form-container">
+        <h2>Pagamento #{{ pagamento.idpagamentos }}</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Valor</th>
+                    <th>Data</th>
+                    <th>Método de Pagamento</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ pagamento.valor }}€</td>
+                    <td>{{ pagamento.data }}</td>
+                    <td>{{ pagamento.metodo }}</td>
+                    <td>{{ pagamento.status }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Itens da Encomenda</h3>
+        <ul>
+            {% for item in itens_encomenda %}
+                <li>{{ item.produto }} - {{ item.quantidade }} x {{ item.preco }}€</li>
+            {% empty %}
+                <li>Não há itens na encomenda.</li>
+            {% endfor %}
+        </ul>
+
+        <p><strong>Status do Pagamento:</strong> Pendente</p>
+
+        <!-- Botão para Criar Pagamento -->
+        <form action="{% url 'registrar_pagamento' encomenda.idencomendas %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Criar Pagamento</button>
+        </form>
+
+        <a href="{% url 'pagamentos_pendentes' %}">Voltar para Pagamentos Pendentes</a>
+    </div>
+</body>
+</html>

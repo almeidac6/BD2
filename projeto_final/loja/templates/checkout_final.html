@@ -4,20 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compra Concluída</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
 </head>
 <body>
     <header>
-        <h1>Compra Concluída</h1>
+        <h1>Checkout</h1>
     </header>
 
     <div class="form-container">
-        <h2>Compra Realizada com Sucesso!</h2>
-        <p>Obrigado pela sua compra. Em breve, você receberá a confirmação de envio.</p>
-        <div class="back-link">
-            <a href="{% url 'loja' %}" class="back-button">Voltar à Página Inicial</a>
-        </div>
+        <h2>Resumo do Pedido</h2>
+
+        <h3>Produtos no Carrinho:</h3>
+        <ul>
+            {% for item in carrinho %}
+                <li>{{ item.nome }} - {{ item.quantidade }} x {{ item.preco }}€</li>
+            {% empty %}
+                <li>Carrinho vazio.</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Total: {{ total }}€</h3>
+
+        <h3>Insira seus Dados para Finalizar o Checkout</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="id_cliente">ID Cliente:</label>
+            <input type="text" name="id_cliente" required><br>
+
+            <label for="morada">Morada:</label>
+            <input type="text" name="morada" required><br>
+
+            <label for="metodo_pagamento">Método de Pagamento:</label>
+            <select name="metodo_pagamento" id="metodo_pagamento" required>
+                <option value="cartao">Cartão de Crédito</option>
+                <option value="boleto">Boleto</option>
+                <option value="paypal">Paypal</option>
+            </select><br>
+
+            <!-- Passando o carrinho como um campo oculto -->
+            <input type="hidden" name="carrinho" value="{{ carrinho|escapejs }}">
+
+            <button type="submit">Finalizar Compra</button>
+        </form>
     </div>
 </body>
 </html>
